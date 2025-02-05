@@ -1,9 +1,9 @@
  const express = require('express');
 const router = express.Router();
 const Expense = require('../models/Expense');
-const authMiddleware = require('../middleware/auth');
+// const authMiddleware = require('../middleware/auth');
  
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const expense = new Expense({
       ...req.body,
@@ -16,7 +16,7 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
- router.get('/', authMiddleware, async (req, res) => {
+ router.get('/', async (req, res) => {
   try {
     const expenses = await Expense.find({ user: req.user._id }).sort({ date: -1 });
     res.json(expenses);
@@ -25,7 +25,7 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
- router.put('/:id', authMiddleware, async (req, res) => {
+ router.put('/:id', async (req, res) => {
   try {
      const expense = await Expense.findOneAndUpdate(
       { _id: req.params.id, user: req.user._id },
@@ -39,7 +39,7 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
- router.delete('/:id', authMiddleware, async (req, res) => {
+ router.delete('/:id', async (req, res) => {
   try {
     const deletedExpense = await Expense.findOneAndDelete({
       _id: req.params.id,
