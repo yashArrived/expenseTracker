@@ -1,32 +1,46 @@
- const express = require('express');
+const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
 const dotenv = require('dotenv');
-// const authRoutes = require('./routes/auth');
-const expenseRoutes = require('./routes/expenses');
+const cors = require('cors');
 
+ 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+ 
+app.use(cors()); 
 app.use(express.json());
+
  
 mongoose
-  .connect("mongodb+srv://yash:tiwari@cluster0.uj9zl7s.mongodb.net/expense-tracker", { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(process.env.MONGO_URI || "mongodb+srv://yash:tiwari@cluster0.uj9zl7s.mongodb.net/devHub", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.error('MongoDB error:', err));
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);  
+  });
 
  
-// app.use('/auth', authRoutes);
- 
+const expenseRoutes = require('./routes/expenses');
 app.use('/expenses', expenseRoutes);
-
+ 
+ 
 app.get('/', (req, res) => {
   res.send('Expense Tracker API');
 });
 
+ 
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
+});
+
+ 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

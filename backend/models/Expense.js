@@ -1,4 +1,5 @@
- const mongoose = require('mongoose');
+ 
+const mongoose = require('mongoose');
 
 const ExpenseSchema = new mongoose.Schema({
   amount: {
@@ -12,7 +13,7 @@ const ExpenseSchema = new mongoose.Schema({
   description: String,
   date: {
     type: Date,
-    required: true,
+    // required: true,
     default: Date.now
   }
 });

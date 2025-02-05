@@ -1,4 +1,4 @@
- import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ExpenseForm from './components/ExpenseForm';
 import ExpenseList from './components/ExpenseList';
@@ -13,7 +13,7 @@ const App = () => {
   const fetchExpenses = async () => {
     try {
       const res = await axios.get(API_URL);
-      setExpenses(res.data);
+      setExpenses(res.data.data);
     } catch (error) {
       console.error('Error fetching expenses:', error);
     }
@@ -58,7 +58,7 @@ const App = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-center text-indigo-600 mb-8">Expense Tracker</h1>
+        <h1 className="text-4xl font-bold text-center text-blue-600 mb-8">Expense Tracker</h1>
         <ExpenseForm
           addExpense={addExpense}
           editExpense={editExpense}

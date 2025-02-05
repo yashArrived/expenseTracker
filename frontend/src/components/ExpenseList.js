@@ -5,7 +5,7 @@ const ExpenseList = ({ expenses, setExpenseToEdit, deleteExpense }) => {
     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-8">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Expenses</h2>
       <ul>
-        {expenses.map(expense => (
+      {expenses?.map(expense => (
           <li key={expense._id} className="border-b border-gray-200 py-4">
             <div className="flex justify-between items-center">
               <div>

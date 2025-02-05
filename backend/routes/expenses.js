@@ -1,54 +1,73 @@
- const express = require('express');
+const express = require('express');
 const router = express.Router();
 const Expense = require('../models/Expense');
-// const authMiddleware = require('../middleware/auth');
- 
+
+// Add an expense
 router.post('/', async (req, res) => {
   try {
-    const expense = new Expense({
-      ...req.body,
-      user: req.user._id, 
-    });
-    const savedExpense = await expense.save();
-    res.status(201).json(savedExpense);
+    const { amount, category, description, date } = req.body;
+
+    // Validate required fields
+    if (!amount || !category) {
+      return res.status(400).json({ success: false, message: "Amount and category are required" });
+    }
+
+    const expense = new Expense({ amount, category, description, date });
+    await expense.save();
+    res.status(201).json({ success: true, data: expense });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
- router.get('/', async (req, res) => {
+// Get all expenses
+router.get('/', async (req, res) => {
   try {
-    const expenses = await Expense.find({ user: req.user._id }).sort({ date: -1 });
-    res.json(expenses);
+    const expenses = await Expense.find();
+    res.status(200).json({ success: true, data: expenses });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
- router.put('/:id', async (req, res) => {
+// Update an expense
+router.put('/:id', async (req, res) => {
   try {
-     const expense = await Expense.findOneAndUpdate(
-      { _id: req.params.id, user: req.user._id },
-      req.body,
+    const { amount, category, description, date } = req.body;
+
+    // Validate required fields
+    if (!amount || !category) {
+      return res.status(400).json({ success: false, message: "Amount and category are required" });
+    }
+
+    const updatedExpense = await Expense.findByIdAndUpdate(
+      req.params.id,
+      { amount, category, description, date },
       { new: true }
     );
-    if (!expense) return res.status(404).json({ message: 'Expense not found' });
-    res.json(expense);
+
+    if (!updatedExpense) {
+      return res.status(404).json({ success: false, message: 'Expense not found' });
+    }
+
+    res.status(200).json({ success: true, data: updatedExpense });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
- router.delete('/:id', async (req, res) => {
+// Delete an expense
+router.delete('/:id', async (req, res) => {
   try {
-    const deletedExpense = await Expense.findOneAndDelete({
-      _id: req.params.id,
-      user: req.user._id,
-    });
-    if (!deletedExpense) return res.status(404).json({ message: 'Expense not found' });
-    res.json({ message: 'Expense deleted' });
+    const deletedExpense = await Expense.findByIdAndDelete(req.params.id);
+
+    if (!deletedExpense) {
+      return res.status(404).json({ success: false, message: 'Expense not found' });
+    }
+
+    res.status(200).json({ success: true, message: 'Expense deleted' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
